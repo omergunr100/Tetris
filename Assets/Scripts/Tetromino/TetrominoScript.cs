@@ -35,12 +35,12 @@ namespace Tetromino
 
         private void OnDestroy()
         {
+            GameManager.Instance.CurrentTetrominos.Remove(this);
             foreach (var block in TetrominoBlocks)
             {
                 block.transform.SetParent(null);
             }
             BoardManager.Instance.PutOnBoard(TetrominoBlocks.ToArray());
-            GameManager.Instance.CurrentTetrominos.Remove(this);
         }
     }
 }

@@ -129,6 +129,7 @@ namespace Management.Board
         public void PutOnBoard(GameObject[] objects)
         {
             var scoreBonus = 0;
+            var fullRows = new HashSet<int>();
             
             foreach (var obj in objects)
             {
@@ -144,15 +145,20 @@ namespace Management.Board
                 
                 // put the object on the board
                 if (IsEmptyIndex(x, y))
+                {
                     _board[x, y] = obj;
+                }
                 
                 // check if line is now full
                 if (IsRowFull(y))
                 {
+                    Debug.Log($"Detected full row at {y}");
                     scoreBonus += 1;
-                    ClearRow(y);
+                    fullRows.Add(y);
                 }
             }
+            
+            ClearRows(fullRows);
             
             // add score to current score
             var currentLineBonus = 100;
@@ -165,16 +171,42 @@ namespace Management.Board
             ScoreManager.Instance.AddScore(totalAdd);
         }
 
-        private void ClearRow(int y)
+        private void ClearRows(ISet<int> yList)
         {
-            // todo: clear the row, remove all blocks and drop all rows above one down
+            var emptySoFar = 0;
+            for (var y = 0; y < height; y++)
+            {
+                if (yList.Contains(y))
+                {
+                    Debug.Log($"Clearing row {y}");
+                    emptySoFar++;
+                    for (var x = 0; x < width; x++)
+                    {
+                        Destroy(_board[x, y]);
+                        _board[x, y] = null;
+                    }
+                }
+                else if (emptySoFar > 0)
+                {
+                    for (var x = 0; x < width; x++)
+                    {
+                        var obj = _board[x, y];
+                        if (obj != null)
+                        {
+                            obj.transform.position += Vector3.down * emptySoFar;
+                            _board[x, y - emptySoFar] = obj;
+                            _board[x, y] = null;
+                        }
+                    }
+                }
+            }
         }
 
         public bool IsRowFull(int y)
         {
             var full = true;
 
-            for (var x = 0; x < width; x++)
+            for (var x = 0; x < width && full; x++)
                 full &= _board[x, y] != null;
             
             return full;
