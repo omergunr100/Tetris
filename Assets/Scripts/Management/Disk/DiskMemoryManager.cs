@@ -1,19 +1,41 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.IO;
+using UnityEngine;
 using Utils;
 
-namespace Management
+namespace Management.Disk
 {
     public class DiskMemoryManager : Singleton<DiskMemoryManager>
     {
-        public List<int> GetHighScores()
+        public bool ReadFile(string filename, out string result)
         {
-            // todo: load from disk
-            return new List<int>();
+            var path = Path.Combine(Application.persistentDataPath, filename);
+            try
+            {
+                result = File.ReadAllText(path);
+                return true;
+            }
+            catch (Exception)
+            {
+                result = "";
+                return false;
+            }
         }
 
-        public void SaveHighScore(int score)
+        public bool WriteFile(string filename, string content)
         {
-            // todo: save to disk
+            var path = Path.Combine(Application.persistentDataPath, filename);
+
+            try
+            {
+                File.WriteAllText(path, content);
+                return true;
+            }
+            catch (Exception)
+            {
+                Debug.Log($"Failed to write to file {filename}");
+                return false;
+            }
         }
     }
 }
