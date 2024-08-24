@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Management.Disk;
 using Utils;
 
 namespace Management.Score
@@ -15,7 +16,8 @@ namespace Management.Score
 
         private void LoadHighScores()
         {
-            HighScores = DiskMemoryManager.Instance.GetHighScores();
+            // todo: read scores from file
+            // HighScores = DiskMemoryManager.Instance.ReadFile();
         }
         
         public void AddScore(int score)
@@ -30,7 +32,8 @@ namespace Management.Score
 
         public void SaveScore()
         {
-            DiskMemoryManager.Instance.SaveHighScore(Score);
+            // todo: write score to file
+            // DiskMemoryManager.Instance.SaveHighScore(Score);
             LoadHighScores();
             ResetScore();
         }

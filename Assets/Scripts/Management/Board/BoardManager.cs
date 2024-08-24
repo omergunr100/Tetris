@@ -139,7 +139,7 @@ namespace Management.Board
                 // check for loss condition
                 if (y == height)
                 {
-                    // todo: we lost, do not add score and notify game manager
+                    GameManager.Instance.OnLoss();
                     return;
                 }
                 

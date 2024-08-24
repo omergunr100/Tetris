@@ -66,5 +66,10 @@ namespace Management
                 _timeSinceDrop = 0f;
             }
         }
+
+        public void OnLoss()
+        {
+            
+        }
     }
 }
