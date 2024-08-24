@@ -17,6 +17,7 @@ namespace Management.Tetromino
             {
                 // add all tetrominos to the bucket in a random order
                 var tetrominos = new List<GameObject>(tetrominoPrefabs);
+                tetrominos.AddRange(tetrominoPrefabs);
                 while (tetrominos.Count > 0)
                 {
                     var randomIndex = Random.Range(0, tetrominos.Count);
