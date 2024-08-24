@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Management;
 using Management.Board;
 using UnityEngine;
 
@@ -19,7 +18,7 @@ namespace Tetromino
             {
                 tetrominoBlock.GetComponent<SpriteRenderer>().color = color;
             }
-            GameManager.Instance.CurrentTetrominos.Add(this);
+            BoardManager.Instance.CurrentTetromino = this;
         }
 
         public void Move(Vector3 offset)
@@ -35,7 +34,7 @@ namespace Tetromino
 
         private void OnDestroy()
         {
-            GameManager.Instance.CurrentTetrominos.Remove(this);
+            BoardManager.Instance.CurrentTetromino = null;
             foreach (var block in TetrominoBlocks)
             {
                 block.transform.SetParent(null);

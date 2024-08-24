@@ -20,6 +20,8 @@ namespace Management.Board
         
         public Vector3 SpawnPosition => new(width / 2f, height, 0);
 
+        public TetrominoScript CurrentTetromino { get; set; } = null;
+
         private void CreateBoard()
         {
             _board = new GameObject[width, height + 1];
@@ -30,22 +32,41 @@ namespace Management.Board
 
         private void CreateBorder()
         {
-            _wallParent = new GameObject("WallParent");
+            if (_wallParent == null)
+                _wallParent = new GameObject("WallParent");
+            var wallCount = 0;
             for (var x = -1; x <= width; x++)
             {
                 for (var y = -1; y <= height; y++)
                 {
                     if (x == -1 || x == width || y == -1)
                     {
-                        var wall = new GameObject("Wall");
+                        GameObject wall;
+                        if (wallCount < _border.Count)
+                        {
+                            wall = _border[wallCount];
+                            wall.SetActive(true);
+                        }
+                        else
+                        {
+                            wall = new GameObject("Wall");
+                            _border.Add(wall);
+                        }
+
                         wall.transform.position = new Vector3(x, y, 0);
                         var spriteRenderer = wall.AddComponent<SpriteRenderer>();
                         spriteRenderer.sprite = wallSprite;
                         spriteRenderer.color = Color.gray;
-                        _border.Add(wall);
                         wall.transform.SetParent(_wallParent.transform);
+                        wallCount++;
                     }
                 }
+            }
+
+            for (var i = wallCount; i < _border.Count; i++)
+            {
+                Destroy(_border[i]);
+                _border.RemoveAt(i);
             }
             _wallParent.transform.position += Vector3.right * 0.5f + Vector3.up * 0.5f;
         }
@@ -59,9 +80,7 @@ namespace Management.Board
         
         private void Awake()
         {
-            CreateBoard();
-            CreateBorder();
-            DirectCamera();
+            Reset();
         }
 
         public (int, int) PositionToBoard(Vector3 p) => (Mathf.FloorToInt(p.x), Mathf.FloorToInt(p.y));
@@ -210,6 +229,27 @@ namespace Management.Board
                 full &= _board[x, y] != null;
             
             return full;
+        }
+
+        public void Reset()
+        {
+            CreateBoard();
+            CreateBorder();
+            DirectCamera();
+        }
+
+        public void Clear()
+        {
+            // destroy all block scripts
+            foreach (var blockScript in FindObjectsByType<BlockScript>(FindObjectsSortMode.None))
+                Destroy(blockScript.gameObject);
+            
+            // hide all walls
+            foreach (var wall in _border)
+            {
+                wall.SetActive(false);
+                wall.transform.parent = null;
+            }
         }
     }
 }

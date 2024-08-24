@@ -30,7 +30,7 @@ namespace Management.Tetromino
             tetromino.transform.position = BoardManager.Instance.SpawnPosition;
         }
 
-        public void Reset()
+        public void Clear()
         {
             _tetrominoQueue.Clear();
         }

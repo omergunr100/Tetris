@@ -2,9 +2,8 @@
 {
     public enum GamePhase
     {
-        TitleScreen,
-        Playing,
-        Paused,
-        GameOver
+        Title,
+        Game,
+        Loss
     }
 }

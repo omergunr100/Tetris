@@ -1,4 +1,5 @@
 ﻿using Management;
+using Management.Board;
 using UnityEngine;
 using Utils;
 
@@ -16,14 +17,14 @@ namespace Player
             _timeSinceLastMove += Time.deltaTime;
             
             if (GetRotationInput())
-                GameManager.Instance.RotateTetrominos();
+                BoardManager.Instance.TryRotate(BoardManager.Instance.CurrentTetromino);
             
             if (_timeSinceLastMove >= 1f / ActualMovementSpeed)
             {
                 _timeSinceLastMove = 0f;
                     
-                if (GameManager.Instance.CurrentTetrominos.Count > 0)
-                    GameManager.Instance.MoveTetrominos(GetMovementInput());
+                if (BoardManager.Instance.CurrentTetromino != null)
+                    BoardManager.Instance.TryMove(BoardManager.Instance.CurrentTetromino, GetMovementInput());
             }
         }
 

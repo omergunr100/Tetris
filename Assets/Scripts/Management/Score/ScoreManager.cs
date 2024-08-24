@@ -25,17 +25,16 @@ namespace Management.Score
             Score += score;
         }
 
-        public void ResetScore()
-        {
-            Score = 0;
-        }
-
         public void SaveScore()
         {
             // todo: write score to file
             // DiskMemoryManager.Instance.SaveHighScore(Score);
             LoadHighScores();
-            ResetScore();
+        }
+
+        public void Reset()
+        {
+            Score = 0;
         }
     }
 }

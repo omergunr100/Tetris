@@ -231,6 +231,10 @@ PrefabInstance:
       value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2439732113564448426, guid: 042c46d697e14604baade241f616d268, type: 3}
+      propertyPath: height
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 2439732113564448426, guid: 042c46d697e14604baade241f616d268, type: 3}
       propertyPath: mainCamera
       value: 
       objectReference: {fileID: 519420031}
@@ -295,6 +299,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1891470450995890888, guid: 998152a6513be5a4ab89f774db5d1688, type: 3}
+      propertyPath: movementSpeed
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 5969995432857019351, guid: 998152a6513be5a4ab89f774db5d1688, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
