@@ -12,6 +12,7 @@ namespace Management.Pooling
     {
         private readonly IObjectPool<BlockScript> _blockPool = new TetrisObjectPool<BlockScript>(
             createObject: () => Instantiate(PrefabStore.Instance.blockPrefab),
+            onGet: block => block.gameObject.SetActive(true), 
             initialSize: 100
         );
 
