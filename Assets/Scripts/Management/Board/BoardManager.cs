@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Management.Pooling;
 using Management.Score;
 using Tetromino;
 using UnityEngine;
@@ -14,8 +15,7 @@ namespace Management.Board
         [SerializeField] private int width = 10;
         [SerializeField] private int height = 10;
         
-        private GameObject[,] _board;
-        private readonly List<GameObject> _border = new();
+        private BlockScript[,] _board;
         private GameObject _wallParent;
         
         public Vector3 SpawnPosition => new(width / 2f, height, 0);
@@ -24,7 +24,7 @@ namespace Management.Board
 
         private void CreateBoard()
         {
-            _board = new GameObject[width, height + 1];
+            _board = new BlockScript[width, height + 1];
             for (var x = 0; x < width; x++)
             for (var y = 0; y < height; y++)
                 _board[x, y] = null;
@@ -34,40 +34,23 @@ namespace Management.Board
         {
             if (_wallParent == null)
                 _wallParent = new GameObject("WallParent");
-            var wallCount = 0;
+            
             for (var x = -1; x <= width; x++)
             {
                 for (var y = -1; y <= height; y++)
                 {
                     if (x == -1 || x == width || y == -1)
                     {
-                        GameObject wall;
-                        if (wallCount < _border.Count)
-                        {
-                            wall = _border[wallCount];
-                            wall.SetActive(true);
-                        }
-                        else
-                        {
-                            wall = new GameObject("Wall");
-                            _border.Add(wall);
-                        }
+                        var wall = PoolStore.Instance.Get<BlockScript>();
 
                         wall.transform.position = new Vector3(x, y, 0);
-                        var spriteRenderer = wall.AddComponent<SpriteRenderer>();
-                        spriteRenderer.sprite = wallSprite;
+                        var spriteRenderer = wall.GetComponentInParent<SpriteRenderer>();
                         spriteRenderer.color = Color.gray;
                         wall.transform.SetParent(_wallParent.transform);
-                        wallCount++;
                     }
                 }
             }
-
-            for (var i = wallCount; i < _border.Count; i++)
-            {
-                Destroy(_border[i]);
-                _border.RemoveAt(i);
-            }
+            
             _wallParent.transform.position += Vector3.right * 0.5f + Vector3.up * 0.5f;
         }
 
@@ -83,9 +66,9 @@ namespace Management.Board
             Reset();
         }
 
-        public (int, int) PositionToBoard(Vector3 p) => (Mathf.FloorToInt(p.x), Mathf.FloorToInt(p.y));
+        private (int, int) PositionToBoard(Vector3 p) => (Mathf.FloorToInt(p.x), Mathf.FloorToInt(p.y));
 
-        public bool IsEmptyIndex(int x, int y)
+        private bool IsEmptyIndex(int x, int y)
         {
             if (x >= width || x < 0 || y < 0 || y > height) return false;
             return _board[x, y] == null;
@@ -102,6 +85,7 @@ namespace Management.Board
             }
 
             if (legal) Move(mover.transform, direction);
+            else if (ShouldStop(mover)) mover.Remove();
             
             return legal;
         }
@@ -145,15 +129,15 @@ namespace Management.Board
             return stop;
         }
 
-        public void PutOnBoard(GameObject[] objects)
+        public void PutOnBoard(List<BlockScript> blocks)
         {
             var scoreBonus = 0;
             var fullRows = new HashSet<int>();
             
-            foreach (var obj in objects)
+            foreach (var block in blocks)
             {
                 // get the board position of the object
-                var (x, y) = PositionToBoard(obj.transform.position);
+                var (x, y) = PositionToBoard(block.transform.position);
                 
                 // check for loss condition
                 if (y == height)
@@ -165,7 +149,7 @@ namespace Management.Board
                 // put the object on the board
                 if (IsEmptyIndex(x, y))
                 {
-                    _board[x, y] = obj;
+                    _board[x, y] = block;
                 }
                 
                 // check if line is now full
@@ -197,11 +181,10 @@ namespace Management.Board
             {
                 if (yList.Contains(y))
                 {
-                    Debug.Log($"Clearing row {y}");
                     emptySoFar++;
                     for (var x = 0; x < width; x++)
                     {
-                        Destroy(_board[x, y]);
+                        _board[x, y].gameObject.SetActive(false);
                         _board[x, y] = null;
                     }
                 }
@@ -240,15 +223,18 @@ namespace Management.Board
 
         public void Clear()
         {
-            // destroy all block scripts
-            foreach (var blockScript in FindObjectsByType<BlockScript>(FindObjectsSortMode.None))
-                Destroy(blockScript.gameObject);
-            
-            // hide all walls
-            foreach (var wall in _border)
+            // todo: this is sus, might be another way to get all child transforms
+            foreach (Transform blockTransform in _wallParent.transform)
             {
-                wall.SetActive(false);
-                wall.transform.parent = null;
+                blockTransform.transform.parent = null;
+                blockTransform.gameObject.SetActive(false);
+            }
+            
+            for (var x = 0; x < width; x++)
+            for (var y = 0; y < height; y++)
+            {
+                _board[x, y]?.gameObject.SetActive(false);
+                _board[x, y] = null;
             }
         }
     }
