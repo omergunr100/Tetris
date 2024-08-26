@@ -47,6 +47,7 @@ namespace Pooling
             {
                 obj = _pool[0];
                 _pool.RemoveAt(0);
+                _currSize--;
             }
             else
             {
@@ -79,6 +80,8 @@ namespace Pooling
                 _onDestroy?.Invoke(behaviour);
                 Object.Destroy(behaviour);
             }
+
+            _currSize = 0;
         }
     }
 }
