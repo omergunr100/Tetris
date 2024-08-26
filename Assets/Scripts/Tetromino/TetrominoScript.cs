@@ -7,10 +7,13 @@ namespace Tetromino
 {
     public class TetrominoScript : MonoBehaviour
     {
+        // just in case we choose to implement as a list of directives and tetromino singleton
+        [SerializeField] public readonly List<List<BlockDirective>> Directives = new();
+        
         [SerializeField] private Color color;
         [SerializeField] private List<BlockDirective> blockDirectives;
             
-        private readonly List<BlockScript> _tetrominoBlocks = new();
+        public readonly List<BlockScript> TetrominoBlocks = new();
 
         public void Setup()
         {
@@ -18,7 +21,7 @@ namespace Tetromino
             {
                 var block = PoolStore.Instance.Get<BlockScript>();
                 block.GetComponent<SpriteRenderer>().color = color;
-                _tetrominoBlocks.Add(block);
+                TetrominoBlocks.Add(block);
                 block.transform.parent = transform;
                 block.transform.localPosition = directive.relativePosition;
                 block.transform.localRotation = directive.rotation;
@@ -31,22 +34,11 @@ namespace Tetromino
         public void Remove()
         {
             BoardManager.Instance.CurrentTetromino = null;
-            foreach (var block in _tetrominoBlocks)
+            foreach (var block in TetrominoBlocks)
             {
                 block.transform.SetParent(null);
             }
-            BoardManager.Instance.PutOnBoard(_tetrominoBlocks);
-        }
-
-        public void Move(Vector3 offset)
-        {
-            if (!BoardManager.Instance.TryMove(this, offset) && BoardManager.Instance.ShouldStop(this))
-                Remove();
-        }
-
-        public void Rotate()
-        {
-            BoardManager.Instance.TryRotate(this);
+            BoardManager.Instance.PutOnBoard(TetrominoBlocks);
         }
     }
 }
