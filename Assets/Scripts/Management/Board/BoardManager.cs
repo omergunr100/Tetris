@@ -10,7 +10,6 @@ namespace Management.Board
     public class BoardManager : Singleton<BoardManager>
     {
         [SerializeField] private Camera mainCamera;
-        [SerializeField] private Sprite wallSprite;
         
         [SerializeField] private int width = 10;
         [SerializeField] private int height = 10;
@@ -76,6 +75,8 @@ namespace Management.Board
         
         public bool TryMove(TetrominoScript mover, Vector3 direction)
         {
+            if (mover == null || !mover.gameObject.activeSelf) return false;
+            
             var legal = true;
             foreach (var block in mover.TetrominoBlocks)
             {
@@ -120,12 +121,15 @@ namespace Management.Board
         {
             var stop = false;
 
+            if (tetromino == null) return false;
+            
             foreach (var block in tetromino.TetrominoBlocks)
             {
-                var (x, y) = PositionToBoard(block.transform.position);
+                var (x, y) = PositionToBoard(block.transform.parent.position + block.transform.localPosition);
                 stop |= !IsEmptyIndex(x, y - 1);
             }
             
+            Debug.Log($"{tetromino.gameObject.name} should stop? {stop}");
             return stop;
         }
 
@@ -184,7 +188,9 @@ namespace Management.Board
                     emptySoFar++;
                     for (var x = 0; x < width; x++)
                     {
-                        _board[x, y].gameObject.SetActive(false);
+                        var block = _board[x, y];
+                        PoolStore.Instance.Release(block);
+                        
                         _board[x, y] = null;
                     }
                 }
@@ -227,14 +233,18 @@ namespace Management.Board
             foreach (Transform blockTransform in _wallParent.transform)
             {
                 blockTransform.transform.parent = null;
-                blockTransform.gameObject.SetActive(false);
+                PoolStore.Instance.Release(blockTransform.GetComponentInParent<BlockScript>());
             }
             
             for (var x = 0; x < width; x++)
             for (var y = 0; y < height; y++)
             {
-                _board[x, y]?.gameObject.SetActive(false);
-                _board[x, y] = null;
+                var block = _board[x, y];
+                if (block != null)
+                {
+                    PoolStore.Instance.Release(block);
+                    _board[x, y] = null;
+                }
             }
         }
     }

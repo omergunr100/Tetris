@@ -15,16 +15,17 @@ namespace Player
         private void Update()
         {
             _timeSinceLastMove += Time.deltaTime;
-            
+
+            var tetromino = BoardManager.Instance.CurrentTetromino;
             if (GetRotationInput())
-                BoardManager.Instance.TryRotate(BoardManager.Instance.CurrentTetromino);
+                BoardManager.Instance.TryRotate(tetromino);
             
             if (_timeSinceLastMove >= 1f / ActualMovementSpeed)
             {
                 _timeSinceLastMove = 0f;
                     
-                if (BoardManager.Instance.CurrentTetromino != null)
-                    BoardManager.Instance.TryMove(BoardManager.Instance.CurrentTetromino, GetMovementInput());
+                if (tetromino != null && tetromino.gameObject.activeSelf)
+                    BoardManager.Instance.TryMove(tetromino, GetMovementInput());
             }
         }
 

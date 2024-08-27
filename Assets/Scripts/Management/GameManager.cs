@@ -36,13 +36,10 @@ namespace Management
                 var boardManager = BoardManager.Instance;
                 var tetromino = boardManager.CurrentTetromino;
                 if (tetromino == null)
-                    TetrominoSpawner.Instance.Spawn();
-
-                if (_timeSinceDrop >= 1f / GameSpeed)
+                    TetrominoSpawner.Instance.StartSpawn();
+                else if (_timeSinceDrop >= 1f / GameSpeed && tetromino.gameObject.activeSelf)
                 {
-                    if (!boardManager.TryMove(tetromino, Vector3.down) && boardManager.ShouldStop(tetromino))
-                        Destroy(tetromino);
-
+                    boardManager.TryMove(tetromino, Vector3.down);
                     _timeSinceDrop = 0f;
                 }
             }
