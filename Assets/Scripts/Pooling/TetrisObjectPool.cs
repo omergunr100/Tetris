@@ -80,6 +80,7 @@ namespace Pooling
                 _onDestroy?.Invoke(behaviour);
                 Object.Destroy(behaviour);
             }
+            _pool.Clear();
 
             _currSize = 0;
         }
