@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 6315243695539984022}
   - component: {fileID: 6065700891291977821}
   - component: {fileID: -8843115525177262971}
+  - component: {fileID: 3184929301755359884}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -102,7 +103,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41e4d519bd04489e82b7b2cd93442fd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tetrominoPrefabs: []
 --- !u!114 &-8843115525177262971
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,3 +124,15 @@ MonoBehaviour:
   - {fileID: 5411959698613634474, guid: 0308b42198ba9ff40bbf53ea0ad6465e, type: 3}
   - {fileID: 3664331914487795685, guid: 3cfe9b333338ed743ada94672a5e6a59, type: 3}
   - {fileID: 1385478842158320462, guid: aa4961870a6a6084a9f2d16eedf6aa0d, type: 3}
+--- !u!114 &3184929301755359884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7065044495672007060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b3306652cbd49c4b920a94c18af2f25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
