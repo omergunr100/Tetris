@@ -222,6 +222,38 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -8843115525177262971, guid: 042c46d697e14604baade241f616d268, type: 3}
+      propertyPath: tetrominoDataPrefabs.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: -8843115525177262971, guid: 042c46d697e14604baade241f616d268, type: 3}
+      propertyPath: tetrominoDataPrefabs.Array.data[0]
+      value: 
+      objectReference: {fileID: 11400000, guid: 56c9d83b98302e44b817c8f3a0ecc6af, type: 2}
+    - target: {fileID: -8843115525177262971, guid: 042c46d697e14604baade241f616d268, type: 3}
+      propertyPath: tetrominoDataPrefabs.Array.data[1]
+      value: 
+      objectReference: {fileID: 11400000, guid: 93245d9ac93e4bd4f9d614de2f3bb1e4, type: 2}
+    - target: {fileID: -8843115525177262971, guid: 042c46d697e14604baade241f616d268, type: 3}
+      propertyPath: tetrominoDataPrefabs.Array.data[2]
+      value: 
+      objectReference: {fileID: 11400000, guid: e111db72482c2c14bb1548b8d7a1ab9c, type: 2}
+    - target: {fileID: -8843115525177262971, guid: 042c46d697e14604baade241f616d268, type: 3}
+      propertyPath: tetrominoDataPrefabs.Array.data[3]
+      value: 
+      objectReference: {fileID: 11400000, guid: 77f7811b4c07f014db672287eb99ae19, type: 2}
+    - target: {fileID: -8843115525177262971, guid: 042c46d697e14604baade241f616d268, type: 3}
+      propertyPath: tetrominoDataPrefabs.Array.data[4]
+      value: 
+      objectReference: {fileID: 11400000, guid: b9b1486f8fae9e949bd4e8bb6a1d5c45, type: 2}
+    - target: {fileID: -8843115525177262971, guid: 042c46d697e14604baade241f616d268, type: 3}
+      propertyPath: tetrominoDataPrefabs.Array.data[5]
+      value: 
+      objectReference: {fileID: 11400000, guid: c55edd2972f4ae04ab623492acd917a9, type: 2}
+    - target: {fileID: -8843115525177262971, guid: 042c46d697e14604baade241f616d268, type: 3}
+      propertyPath: tetrominoDataPrefabs.Array.data[6]
+      value: 
+      objectReference: {fileID: 11400000, guid: 733108fa129c8a74b8dffcb515fa3ade, type: 2}
     - target: {fileID: 1257964516497575123, guid: 042c46d697e14604baade241f616d268, type: 3}
       propertyPath: baseGameSpeed
       value: 1.5

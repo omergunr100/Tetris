@@ -32,14 +32,12 @@ namespace Management
             {
                 _timeSinceStart += Time.deltaTime;
                 _timeSinceDrop += Time.deltaTime;
-
-                var boardManager = BoardManager.Instance;
-                var tetromino = boardManager.CurrentTetromino;
-                if (tetromino == null)
-                    TetrominoSpawner.Instance.StartSpawn();
-                else if (_timeSinceDrop >= 1f / GameSpeed && tetromino.gameObject.activeSelf)
+                
+                if (TetrominoScript.Instance.Removed)
+                    TetrominoSpawner.Instance.Spawn();
+                else if (_timeSinceDrop >= 1f / GameSpeed)
                 {
-                    boardManager.TryMove(tetromino, Vector3.down);
+                    BoardManager.Instance.TryMove(Vector3.down);
                     _timeSinceDrop = 0f;
                 }
             }

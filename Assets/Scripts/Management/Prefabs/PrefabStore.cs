@@ -6,7 +6,7 @@ namespace Management.Prefabs
 {
     public class PrefabStore : Singleton<PrefabStore>
     {
-        [SerializeField] public BlockScript blockPrefab;
-        [SerializeField] public TetrominoScript[] tetrominoPrefabs;
+        [SerializeField] public BlockScript blockPrefab; 
+        [SerializeField] public TetrominoDefinition[] tetrominoDataPrefabs;
     }
 }

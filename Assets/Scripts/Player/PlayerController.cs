@@ -1,5 +1,6 @@
 ﻿using Management;
 using Management.Board;
+using Tetromino;
 using UnityEngine;
 using Utils;
 
@@ -15,17 +16,14 @@ namespace Player
         private void Update()
         {
             _timeSinceLastMove += Time.deltaTime;
-
-            var tetromino = BoardManager.Instance.CurrentTetromino;
+            
             if (GetRotationInput())
-                BoardManager.Instance.TryRotate(tetromino);
+                BoardManager.Instance.TryRotate();
             
             if (_timeSinceLastMove >= 1f / ActualMovementSpeed)
             {
                 _timeSinceLastMove = 0f;
-                    
-                if (tetromino != null && tetromino.gameObject.activeSelf)
-                    BoardManager.Instance.TryMove(tetromino, GetMovementInput());
+                if (!TetrominoScript.Instance.Removed) BoardManager.Instance.TryMove(GetMovementInput());
             }
         }
 

@@ -2,45 +2,34 @@
 using Management.Board;
 using Management.Pooling;
 using UnityEngine;
+using Utils;
 
 namespace Tetromino
 {
-    public class TetrominoScript : MonoBehaviour
+    public class TetrominoScript : Singleton<TetrominoScript>
     {
-        // just in case we choose to implement as a list of directives and tetromino singleton
-        [SerializeField] public readonly List<List<BlockDirective>> Directives = new();
-        
-        [SerializeField] private Color color;
-        [SerializeField] private List<BlockDirective> blockDirectives;
-            
         public readonly List<BlockScript> TetrominoBlocks = new();
+        public bool Removed => TetrominoBlocks.Count == 0;
 
-        public void Setup()
+        public void Setup(TetrominoDefinition definition)
         {
-            gameObject.SetActive(true);
-            foreach (var directive in blockDirectives)
+            foreach (var directive in definition.blockDirectives)
             {
                 var block = PoolStore.Instance.Get<BlockScript>();
-                block.GetComponent<SpriteRenderer>().color = color;
+                block.GetComponent<SpriteRenderer>().color = definition.pieceColor;
                 TetrominoBlocks.Add(block);
                 block.transform.parent = transform;
                 block.transform.localPosition = directive.relativePosition;
                 block.transform.localRotation = directive.rotation;
             }
-            // todo: think about implementing tetromino script as singleton
-            // todo: instead of prefabs have a list of lists of block directives
-            BoardManager.Instance.CurrentTetromino = this;
         }
 
         public void Remove()
         {
-            BoardManager.Instance.CurrentTetromino = null;
             foreach (var block in TetrominoBlocks)
-            {
                 block.transform.SetParent(null);
-            }
             BoardManager.Instance.PutOnBoard(TetrominoBlocks);
-            gameObject.SetActive(false);
+            TetrominoBlocks.Clear();
         }
     }
 }

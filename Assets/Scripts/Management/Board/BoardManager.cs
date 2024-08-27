@@ -19,8 +19,6 @@ namespace Management.Board
         
         public Vector3 SpawnPosition => new(width / 2f, height, 0);
 
-        public TetrominoScript CurrentTetromino { get; set; } = null;
-
         private void CreateBoard()
         {
             _board = new BlockScript[width, height + 1];
@@ -73,8 +71,9 @@ namespace Management.Board
             return _board[x, y] == null;
         }
         
-        public bool TryMove(TetrominoScript mover, Vector3 direction)
+        public bool TryMove(Vector3 direction)
         {
+            var mover = TetrominoScript.Instance;
             if (mover == null || !mover.gameObject.activeSelf) return false;
             
             var legal = true;
@@ -86,15 +85,15 @@ namespace Management.Board
             }
 
             if (legal) Move(mover.transform, direction);
-            else if (ShouldStop(mover)) mover.Remove();
+            else if (ShouldStop()) mover.Remove();
             
             return legal;
         }
 
-        public bool TryRotate(TetrominoScript rotator)
+        public bool TryRotate()
         {
             var legal = true;
-            
+            var rotator = TetrominoScript.Instance;
             var center = rotator.transform.position;
             var length = rotator.TetrominoBlocks.Count;
             var newPositions = new Vector3[length];
@@ -117,19 +116,16 @@ namespace Management.Board
 
         public void Move(Transform t, Vector3 offset) => t.position += offset;
 
-        public bool ShouldStop(TetrominoScript tetromino)
+        public bool ShouldStop()
         {
             var stop = false;
-
-            if (tetromino == null) return false;
             
-            foreach (var block in tetromino.TetrominoBlocks)
+            foreach (var block in TetrominoScript.Instance.TetrominoBlocks)
             {
                 var (x, y) = PositionToBoard(block.transform.parent.position + block.transform.localPosition);
                 stop |= !IsEmptyIndex(x, y - 1);
             }
             
-            Debug.Log($"{tetromino.gameObject.name} should stop? {stop}");
             return stop;
         }
 
