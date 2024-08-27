@@ -17,6 +17,7 @@ namespace Tetromino
 
         public void Setup()
         {
+            gameObject.SetActive(true);
             foreach (var directive in blockDirectives)
             {
                 var block = PoolStore.Instance.Get<BlockScript>();
@@ -39,6 +40,7 @@ namespace Tetromino
                 block.transform.SetParent(null);
             }
             BoardManager.Instance.PutOnBoard(TetrominoBlocks);
+            gameObject.SetActive(false);
         }
     }
 }
