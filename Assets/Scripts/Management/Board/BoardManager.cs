@@ -60,7 +60,12 @@ namespace Management.Board
         
         private void Awake()
         {
-            Reset();
+            GameManager.Instance.AddGamePhaseListener(GamePhaseListener);
+        }
+
+        private void GamePhaseListener(GamePhase phase)
+        {
+            if (phase == GamePhase.Game) Reset();
         }
 
         private (int, int) PositionToBoard(Vector3 p) => (Mathf.FloorToInt(p.x), Mathf.FloorToInt(p.y));
@@ -225,22 +230,16 @@ namespace Management.Board
 
         public void Clear()
         {
-            // todo: this is sus, might be another way to get all child transforms
             foreach (Transform blockTransform in _wallParent.transform)
-            {
                 blockTransform.transform.parent = null;
-                PoolStore.Instance.Release(blockTransform.GetComponentInParent<BlockScript>());
-            }
             
             for (var x = 0; x < width; x++)
             for (var y = 0; y < height; y++)
+                _board[x, y] = null;
+            
+            foreach (var blockScript in FindObjectsByType<BlockScript>(FindObjectsSortMode.None))
             {
-                var block = _board[x, y];
-                if (block != null)
-                {
-                    PoolStore.Instance.Release(block);
-                    _board[x, y] = null;
-                }
+                if (blockScript.enabled) PoolStore.Instance.Release(blockScript);
             }
         }
     }

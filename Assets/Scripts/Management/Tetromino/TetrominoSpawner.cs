@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Management.Board;
 using Management.Prefabs;
 using Tetromino;

@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using Management.Board;
 using Management.Score;
 using Management.Tetromino;
@@ -18,12 +20,27 @@ namespace Management
         private float _timeSinceDrop;
 
         public float GameSpeed => baseGameSpeed + _gameSpeedModifier;
+        
+        private GamePhase CurrentGamePhase { get; set; } = GamePhase.Blank;
+        private readonly List<Action<GamePhase>> onPhaseChange = new();
 
-        public GamePhase CurrentGamePhase { get; private set; } = GamePhase.Game; // todo: change to title screen
+        public void AddGamePhaseListener(Action<GamePhase> action) => onPhaseChange.Add(action);
+
+        public void setGamePhase(GamePhase newGamePhase)
+        {
+            CurrentGamePhase = newGamePhase;
+            onPhaseChange.ForEach(action => action.Invoke(newGamePhase));
+            Debug.Log($"Current Game Phase: {newGamePhase}");
+        }
         
         private void SaveScore()
         {
             ScoreManager.Instance.SaveScore();
+        }
+
+        private void Awake()
+        {
+            setGamePhase(GamePhase.Title);
         }
 
         private void Update()
@@ -45,9 +62,6 @@ namespace Management
 
         public void OnLoss()
         {
-            // set game state to loss
-            CurrentGamePhase = GamePhase.Loss;
-
             // animate loss
             var blockScripts = FindObjectsByType<BlockScript>(FindObjectsSortMode.None);
             StartCoroutine(AnimateLoss(blockScripts));
@@ -55,10 +69,9 @@ namespace Management
             // clear managers
             TetrominoSpawner.Instance.Clear();
             BoardManager.Instance.Clear();
-        }
-
-        public void Clear()
-        {
+            
+            // set game state to loss
+            setGamePhase(GamePhase.Loss);
         }
 
         private IEnumerator AnimateLoss(BlockScript[] blockScripts)

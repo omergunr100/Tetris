@@ -2,6 +2,7 @@
 {
     public enum GamePhase
     {
+        Blank,
         Title,
         Game,
         Loss
