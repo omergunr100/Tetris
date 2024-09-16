@@ -11,8 +11,11 @@ namespace Management.Board
     {
         [SerializeField] private Camera mainCamera;
         
-        [SerializeField] private int width = 10;
-        [SerializeField] private int height = 10;
+        [SerializeField] public int width = 10;
+        [SerializeField] public int height = 20;
+
+        public int Bottom { get; private set; } = -1;
+        public int Left { get; private set; } = -1;
         
         private BlockScript[,] _board;
         private GameObject _wallParent;
@@ -32,11 +35,11 @@ namespace Management.Board
             if (_wallParent == null)
                 _wallParent = new GameObject("WallParent");
             
-            for (var x = -1; x <= width; x++)
+            for (var x = Left; x <= width; x++)
             {
-                for (var y = -1; y <= height; y++)
+                for (var y = Bottom; y <= height; y++)
                 {
-                    if (x == -1 || x == width || y == -1)
+                    if (x == Left || x == width || y == Bottom)
                     {
                         var wall = PoolStore.Instance.Get<BlockScript>();
 
@@ -242,5 +245,7 @@ namespace Management.Board
                 if (blockScript.enabled) PoolStore.Instance.Release(blockScript);
             }
         }
+
+        public Vector3 TopRight => new(width, height);
     }
 }

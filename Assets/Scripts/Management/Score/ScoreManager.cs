@@ -1,29 +1,35 @@
-﻿using System.Collections.Generic;
-using Management.Disk;
+﻿using System;
+using System.Collections.Generic;
 using Utils;
 
 namespace Management.Score
 {
     public class ScoreManager : Singleton<ScoreManager>
     {
-        public int Score { get; private set; }
+        private int _score;
         public List<int> HighScores { get; private set; }
+
+        private List<Action<int>> _scoreChangeListeners = new();
+
+        private void Awake()
+        {
+            GameManager.Instance.AddGamePhaseListener(Reset);
+        }
 
         private void Start()
         {
             LoadHighScores();
         }
 
+        public void AddScoreChangeListener(Action<int> listener) => _scoreChangeListeners.Add(listener);
+        
         private void LoadHighScores()
         {
             // todo: read scores from file
             // HighScores = DiskMemoryManager.Instance.ReadFile();
         }
         
-        public void AddScore(int score)
-        {
-            Score += score;
-        }
+        public void AddScore(int score) => SetScore(_score + score);
 
         public void SaveScore()
         {
@@ -32,9 +38,16 @@ namespace Management.Score
             LoadHighScores();
         }
 
-        public void Reset()
+        private void Reset(GamePhase phase)
         {
-            Score = 0;
+            if (phase != GamePhase.Loss)
+                SetScore(0);
+        }
+
+        private void SetScore(int newScore)
+        {
+            _score = newScore;
+            _scoreChangeListeners.ForEach(listener => listener.Invoke(newScore));
         }
     }
 }

@@ -22,14 +22,14 @@ namespace Management
         public float GameSpeed => baseGameSpeed + _gameSpeedModifier;
         
         private GamePhase CurrentGamePhase { get; set; } = GamePhase.Blank;
-        private readonly List<Action<GamePhase>> onPhaseChange = new();
+        private readonly List<Action<GamePhase>> _onPhaseChange = new();
 
-        public void AddGamePhaseListener(Action<GamePhase> action) => onPhaseChange.Add(action);
+        public void AddGamePhaseListener(Action<GamePhase> action) => _onPhaseChange.Add(action);
 
         public void setGamePhase(GamePhase newGamePhase)
         {
             CurrentGamePhase = newGamePhase;
-            onPhaseChange.ForEach(action => action.Invoke(newGamePhase));
+            _onPhaseChange.ForEach(action => action.Invoke(newGamePhase));
             Debug.Log($"Current Game Phase: {newGamePhase}");
         }
         
@@ -38,7 +38,7 @@ namespace Management
             ScoreManager.Instance.SaveScore();
         }
 
-        private void Awake()
+        private void Start()
         {
             setGamePhase(GamePhase.Title);
         }
