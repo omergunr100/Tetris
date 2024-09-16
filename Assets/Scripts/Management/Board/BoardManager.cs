@@ -68,7 +68,15 @@ namespace Management.Board
 
         private void GamePhaseListener(GamePhase phase)
         {
-            if (phase == GamePhase.Game) Reset();
+            switch (phase)
+            {
+                case GamePhase.Game:
+                    Reset();
+                    break;
+                case GamePhase.Loss:
+                    Clear();
+                    break;
+            }
         }
 
         private (int, int) PositionToBoard(Vector3 p) => (Mathf.FloorToInt(p.x), Mathf.FloorToInt(p.y));
@@ -245,7 +253,17 @@ namespace Management.Board
                 if (blockScript.enabled) PoolStore.Instance.Release(blockScript);
             }
         }
-
-        public Vector3 TopRight => new(width, height);
+        
+        public Vector3 GetUpcomingPosition(TetrominoDefinition definition)
+        {
+            var left = float.MaxValue;
+            var top = float.MinValue;
+            definition.blockDirectives.ForEach(directive =>
+            {
+                if (directive.relativePosition.x < left) left = directive.relativePosition.x;
+                if (directive.relativePosition.y > top) top = directive.relativePosition.y;
+            });
+            return new Vector3(width + 2.5f - left, height - 0.5f - top);
+        }
     }
 }

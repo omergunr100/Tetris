@@ -11,18 +11,7 @@ namespace Tetromino
         public readonly List<BlockScript> TetrominoBlocks = new();
         public bool Removed => TetrominoBlocks.Count == 0;
 
-        public void Setup(TetrominoDefinition definition)
-        {
-            foreach (var directive in definition.blockDirectives)
-            {
-                var block = PoolStore.Instance.Get<BlockScript>();
-                block.GetComponent<SpriteRenderer>().color = definition.pieceColor;
-                TetrominoBlocks.Add(block);
-                block.transform.parent = transform;
-                block.transform.localPosition = directive.relativePosition;
-                block.transform.localRotation = directive.rotation;
-            }
-        }
+        public void Setup(TetrominoDefinition definition) => TetrominoDefinition.Setup(definition, TetrominoBlocks, gameObject);
 
         public void Remove()
         {

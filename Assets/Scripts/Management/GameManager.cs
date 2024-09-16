@@ -65,10 +65,6 @@ namespace Management
             // animate loss
             var blockScripts = FindObjectsByType<BlockScript>(FindObjectsSortMode.None);
             StartCoroutine(AnimateLoss(blockScripts));
-
-            // clear managers
-            TetrominoSpawner.Instance.Clear();
-            BoardManager.Instance.Clear();
             
             // set game state to loss
             setGamePhase(GamePhase.Loss);
