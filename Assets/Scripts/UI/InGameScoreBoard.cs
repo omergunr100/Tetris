@@ -1,10 +1,7 @@
 ﻿using System.Text;
-using Management;
-using Management.Board;
 using Management.Score;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace UI
 {

@@ -19,11 +19,18 @@ namespace Management.Board
         
         private BlockScript[,] _board;
         private GameObject _wallParent;
+        private GameObject _boardParent;
+
+        private int _runningCount = 0;
         
         public Vector3 SpawnPosition => new(width / 2f, height, 0);
 
         private void CreateBoard()
         {
+            if (_boardParent == null)
+                _boardParent = new GameObject("Board");
+            else 
+                _boardParent.SetActive(true);
             _board = new BlockScript[width, height + 1];
             for (var x = 0; x < width; x++)
             for (var y = 0; y < height; y++)
@@ -66,8 +73,17 @@ namespace Management.Board
             GameManager.Instance.AddGamePhaseListener(GamePhaseListener);
         }
 
+        private void Start()
+        {
+            CreateBorder();
+        }
+
         private void GamePhaseListener(GamePhase phase)
         {
+            if (_wallParent != null)
+                _wallParent.SetActive(phase == GamePhase.Game);
+            if (_boardParent != null)
+                _boardParent.SetActive(phase == GamePhase.Game);
             switch (phase)
             {
                 case GamePhase.Game:
@@ -150,22 +166,26 @@ namespace Management.Board
             var scoreBonus = 0;
             var fullRows = new HashSet<int>();
             
-            foreach (var block in blocks)
+            for (var i = 0; i < blocks.Count; i++)
             {
                 // get the board position of the object
-                var (x, y) = PositionToBoard(block.transform.position);
+                var (x, y) = PositionToBoard(blocks[i].transform.position);
                 
                 // check for loss condition
-                if (y == height)
+                if (y >= height)
                 {
-                    GameManager.Instance.OnLoss();
+                    for (var j = i; j < blocks.Count; j++)
+                        PoolStore.Instance.Release(blocks[j]);
+                    GameManager.Instance.SetGamePhase(GamePhase.Loss);
                     return;
                 }
                 
                 // put the object on the board
                 if (IsEmptyIndex(x, y))
                 {
-                    _board[x, y] = block;
+                    _board[x, y] = blocks[i];
+                    _board[x, y].gameObject.name = $"{_runningCount++} block";
+                    blocks[i].transform.SetParent(_boardParent.transform);
                 }
                 
                 // check if line is now full
@@ -200,9 +220,8 @@ namespace Management.Board
                     emptySoFar++;
                     for (var x = 0; x < width; x++)
                     {
-                        var block = _board[x, y];
-                        PoolStore.Instance.Release(block);
-                        
+                        _board[x, y].gameObject.name = "Block";
+                        PoolStore.Instance.Release(_board[x, y]);
                         _board[x, y] = null;
                     }
                 }
@@ -222,7 +241,7 @@ namespace Management.Board
             }
         }
 
-        public bool IsRowFull(int y)
+        private bool IsRowFull(int y)
         {
             var full = true;
 
@@ -235,23 +254,23 @@ namespace Management.Board
         public void Reset()
         {
             CreateBoard();
-            CreateBorder();
             DirectCamera();
+            _wallParent.SetActive(true);
         }
 
-        public void Clear()
+        private void Clear()
         {
-            foreach (Transform blockTransform in _wallParent.transform)
-                blockTransform.transform.parent = null;
+            _wallParent.SetActive(false);
             
             for (var x = 0; x < width; x++)
             for (var y = 0; y < height; y++)
-                _board[x, y] = null;
-            
-            foreach (var blockScript in FindObjectsByType<BlockScript>(FindObjectsSortMode.None))
-            {
-                if (blockScript.enabled) PoolStore.Instance.Release(blockScript);
-            }
+                if (_board[x, y] != null)
+                {
+                    _board[x, y].gameObject.name = "Block";
+                    PoolStore.Instance.Release(_board[x, y]);
+                    _board[x, y] = null;
+                }
+            Debug.Log($"BoardParent status: {(_boardParent.transform.childCount == 0 ? "Ok" : "Very very bad")}");
         }
         
         public Vector3 GetUpcomingPosition(TetrominoDefinition definition)

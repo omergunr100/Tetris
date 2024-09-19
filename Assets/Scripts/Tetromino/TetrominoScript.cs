@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Management;
 using Management.Board;
 using Management.Pooling;
-using UnityEngine;
 using Utils;
 
 namespace Tetromino
@@ -11,12 +12,29 @@ namespace Tetromino
         public readonly List<BlockScript> TetrominoBlocks = new();
         public bool Removed => TetrominoBlocks.Count == 0;
 
-        public void Setup(TetrominoDefinition definition) => TetrominoDefinition.Setup(definition, TetrominoBlocks, gameObject);
+        private void Awake()
+        {
+            GameManager.Instance.AddGamePhaseListener(phase =>
+            {
+                switch (phase)
+                {
+                    case GamePhase.Loss:
+                        TetrominoBlocks.ForEach(block =>
+                        {
+                            if (block.gameObject.activeSelf)
+                                PoolStore.Instance.Release(block);
+                        });
+                        TetrominoBlocks.Clear();
+                        break;
+                }
+            });
+        }
+
+        public void Setup(TetrominoDefinition definition) => 
+            TetrominoDefinition.Setup(definition, TetrominoBlocks, gameObject);
 
         public void Remove()
         {
-            foreach (var block in TetrominoBlocks)
-                block.transform.SetParent(null);
             BoardManager.Instance.PutOnBoard(TetrominoBlocks);
             TetrominoBlocks.Clear();
         }

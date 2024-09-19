@@ -5,6 +5,7 @@
         Blank,
         Title,
         Game,
-        Loss
+        Loss,
+        HighScores
     }
 }

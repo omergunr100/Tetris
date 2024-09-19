@@ -8,8 +8,8 @@ namespace Player
 {
     public class PlayerController : Singleton<PlayerController>
     {
-        [SerializeField] private float movementSpeed = 3f;
-        private float ActualMovementSpeed => movementSpeed * GameManager.Instance.GameSpeed;
+        [SerializeField] private float movementSpeed = 2f;
+        private float ActualMovementSpeed => movementSpeed + GameManager.Instance.GameSpeed;
         
         private float _timeSinceLastMove;
         

@@ -1,29 +1,27 @@
-﻿using UnityEngine;
+﻿using Management.Score;
+using UnityEngine;
 using Utils;
 
 namespace Management.UI
 {
     public class CanvasManager : Singleton<CanvasManager>
     {
-        [SerializeField] private Camera mainCamera;
-        [SerializeField] private Canvas titleCanvas;
-        [SerializeField] private Canvas endOfGameCanvas;
-        [SerializeField] private Canvas inGameCanvas;
+        [SerializeField] private GameObject titleCanvas;
+        [SerializeField] private GameObject endOfGameCanvas;
+        [SerializeField] private GameObject inGameCanvas;
+        [SerializeField] private GameObject highScoresCanvas;
 
         private void Awake()
         {
-            RegisterDelegates();
+            GameManager.Instance.AddGamePhaseListener(GamePhaseListener);
         }
 
-        private void RegisterDelegates()
+        private void GamePhaseListener(GamePhase phase)
         {
-            GameManager.Instance.AddGamePhaseListener(TitleCanvasSetEnabled);
-            GameManager.Instance.AddGamePhaseListener(EndOfGameCanvasSetEnabled);
-            GameManager.Instance.AddGamePhaseListener(InGameCanvasSetEnabled);
+            titleCanvas.SetActive(phase == GamePhase.Title);
+            endOfGameCanvas.SetActive(phase == GamePhase.Loss);
+            inGameCanvas.SetActive(phase == GamePhase.Game);
+            highScoresCanvas.SetActive(phase == GamePhase.HighScores);
         }
-
-        private void TitleCanvasSetEnabled(GamePhase phase) => titleCanvas.enabled = phase == GamePhase.Title;
-        private void EndOfGameCanvasSetEnabled(GamePhase phase) => endOfGameCanvas.enabled = phase == GamePhase.Loss;
-        private void InGameCanvasSetEnabled(GamePhase phase) => inGameCanvas.enabled = phase == GamePhase.Game;
     }
 }

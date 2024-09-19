@@ -7,6 +7,7 @@ namespace Pooling
 {
     public class TetrisObjectPool<T> : IObjectPool<T> where T : MonoBehaviour
     {
+        private readonly GameObject _poolObject;
         private readonly List<T> _pool = new();
         
         private readonly Func<T> _createObject;
@@ -21,6 +22,7 @@ namespace Pooling
             Action<T> onGet = null, Action<T> onRelease = null, Action<T> onDestroy = null, 
             int maxSize = 500, int initialSize = 0)
         {
+            _poolObject = new GameObject($"Pool {typeof(T)}");
             _createObject = createObject;
             _onGet = onGet;
             _onRelease = onRelease;
@@ -46,6 +48,7 @@ namespace Pooling
             if (_pool.Count > 0)
             {
                 obj = _pool[0];
+                obj.transform.SetParent(null);
                 _pool.RemoveAt(0);
                 _currSize--;
             }
@@ -60,9 +63,14 @@ namespace Pooling
 
         public void Release(T obj)
         {
+            if (_pool.Contains(obj))
+            {
+                throw new ArgumentException("Tried to re-release a pooled object!");    
+            }
             _onRelease?.Invoke(obj);
             if (_maxSize >= _currSize + 1)
             {
+                obj.transform.SetParent(_poolObject.transform);
                 _pool.Add(obj);
                 _currSize++;
             }

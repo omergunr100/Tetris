@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using Management.Board;
 using Management.Score;
@@ -14,7 +13,7 @@ namespace Management
     {
         [SerializeField] private float baseGameSpeed = 1f;
         
-        private float _gameSpeedModifier;
+        private float _gameSpeedModifier => Mathf.Log(ScoreManager.Instance.Score + 1, 100);
         private float _timeSinceStart;
 
         private float _timeSinceDrop;
@@ -26,21 +25,21 @@ namespace Management
 
         public void AddGamePhaseListener(Action<GamePhase> action) => _onPhaseChange.Add(action);
 
-        public void setGamePhase(GamePhase newGamePhase)
+        public void SetGamePhase(GamePhase newGamePhase)
         {
             CurrentGamePhase = newGamePhase;
             _onPhaseChange.ForEach(action => action.Invoke(newGamePhase));
             Debug.Log($"Current Game Phase: {newGamePhase}");
         }
-        
-        private void SaveScore()
+
+        private void Awake()
         {
-            ScoreManager.Instance.SaveScore();
+            AddGamePhaseListener(GamePhaseListener);
         }
 
         private void Start()
         {
-            setGamePhase(GamePhase.Title);
+            SetGamePhase(GamePhase.Title);
         }
 
         private void Update()
@@ -60,19 +59,21 @@ namespace Management
             }
         }
 
-        public void OnLoss()
+        private void GamePhaseListener(GamePhase phase)
         {
-            // animate loss
-            var blockScripts = FindObjectsByType<BlockScript>(FindObjectsSortMode.None);
-            StartCoroutine(AnimateLoss(blockScripts));
-            
-            // set game state to loss
-            setGamePhase(GamePhase.Loss);
-        }
-
-        private IEnumerator AnimateLoss(BlockScript[] blockScripts)
-        {
-            yield break;
+            switch (phase)
+            {
+                case GamePhase.Title:
+                    break;
+                case GamePhase.Game:
+                    _timeSinceStart = 0;
+                    _timeSinceDrop = 0;
+                    break;
+                case GamePhase.Loss:
+                    break;
+                case GamePhase.HighScores:
+                    break;
+            }
         }
     }
 }
