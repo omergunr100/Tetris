@@ -18,7 +18,7 @@ namespace Tetromino
             foreach (var directive in definition.blockDirectives)
             {
                 var block = PoolStore.Instance.Get<BlockScript>();
-                block.GetComponent<SpriteRenderer>().color = definition.pieceColor;
+                block.SetColor(definition.pieceColor);
                 blocks.Add(block);
                 block.transform.parent = parent.transform;
                 block.transform.localPosition = directive.relativePosition;

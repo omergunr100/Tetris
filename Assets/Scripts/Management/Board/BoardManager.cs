@@ -21,7 +21,7 @@ namespace Management.Board
         private GameObject _wallParent;
         private GameObject _boardParent;
 
-        private int _runningCount = 0;
+        private long _runningCount = 0;
         
         public Vector3 SpawnPosition => new(width / 2f, height, 0);
 
@@ -184,8 +184,10 @@ namespace Management.Board
                 if (IsEmptyIndex(x, y))
                 {
                     _board[x, y] = blocks[i];
-                    _board[x, y].gameObject.name = $"{_runningCount++} block";
                     blocks[i].transform.SetParent(_boardParent.transform);
+                    _board[x, y].IsOnBoard = true;
+                    _board[x, y].BoardLocation = (x, y);
+                    _board[x, y].Id = _runningCount;
                 }
                 
                 // check if line is now full
@@ -208,6 +210,7 @@ namespace Management.Board
                 currentLineBonus += 100;
             }
             ScoreManager.Instance.AddScore(totalAdd);
+            _runningCount++;
         }
 
         private void ClearRows(ISet<int> yList)
@@ -283,6 +286,26 @@ namespace Management.Board
                 if (directive.relativePosition.y > top) top = directive.relativePosition.y;
             });
             return new Vector3(width + 2.5f - left, height - 0.5f - top);
+        }
+        
+        public BlockScript GetBoardPosition(int x, int y) {
+            if (x >= 0 && x < width && y >= 0 && y < height)
+                return _board[x, y];
+            return null;
+        }
+        
+        public void SetBoardPosition(int x, int y, BlockScript block)
+        {
+            if (x >= 0 && x < width && y >= 0 && y < height)
+                _board[x, y] = block;
+        }
+
+        public bool ReleaseBoardPosition(int x, int y)
+        {
+            if (x >= width || x < 0 || y >= height || y < 0 || _board[x, y] == null) return false;
+            PoolStore.Instance.Release(_board[x, y]);
+            _board[x, y] = null;
+            return true;
         }
     }
 }

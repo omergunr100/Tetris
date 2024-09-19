@@ -16,7 +16,11 @@ namespace Management.Pooling
             _pools.Add(typeof(BlockScript).ToString(), new TetrisObjectPool<BlockScript>(
                 createObject: () => Instantiate(PrefabStore.Instance.blockPrefab),
                 onGet: block => block.gameObject.SetActive(true),
-                onRelease: block => block.gameObject.SetActive(false),
+                onRelease: block =>
+                {
+                    block.IsOnBoard = false;
+                    block.gameObject.SetActive(false);
+                },
                 initialSize: 100
             ));
         }

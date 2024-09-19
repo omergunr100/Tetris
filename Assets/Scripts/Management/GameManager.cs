@@ -24,6 +24,7 @@ namespace Management
         private readonly List<Action<GamePhase>> _onPhaseChange = new();
 
         public void AddGamePhaseListener(Action<GamePhase> action) => _onPhaseChange.Add(action);
+        public void RemoveGamePhaseListener(Action<GamePhase> action) => _onPhaseChange.Remove(action);
 
         public void SetGamePhase(GamePhase newGamePhase)
         {

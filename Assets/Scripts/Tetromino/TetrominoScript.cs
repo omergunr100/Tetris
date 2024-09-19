@@ -9,6 +9,7 @@ namespace Tetromino
 {
     public class TetrominoScript : Singleton<TetrominoScript>
     {
+        public TetrominoDefinition Definition { get; private set; } 
         public readonly List<BlockScript> TetrominoBlocks = new();
         public bool Removed => TetrominoBlocks.Count == 0;
 
@@ -30,8 +31,11 @@ namespace Tetromino
             });
         }
 
-        public void Setup(TetrominoDefinition definition) => 
+        public void Setup(TetrominoDefinition definition)
+        {
+            Definition = definition;
             TetrominoDefinition.Setup(definition, TetrominoBlocks, gameObject);
+        }
 
         public void Remove()
         {

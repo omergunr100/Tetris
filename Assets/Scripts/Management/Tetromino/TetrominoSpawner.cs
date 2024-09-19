@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Effects.Implementation;
 using Management.Board;
 using Management.Prefabs;
 using Tetromino;
+using UnityEngine;
 using Utils;
 using Random = UnityEngine.Random;
 
@@ -10,6 +12,8 @@ namespace Management.Tetromino
 {
     public class TetrominoSpawner : Singleton<TetrominoSpawner>
     {
+        private GameObject _effectHolder;
+        
         private readonly Queue<TetrominoDefinition> _tetrominoQueue = new();
 
         private readonly List<Action<TetrominoDefinition>> _nextTetrominoChangeListeners = new();
@@ -17,6 +21,7 @@ namespace Management.Tetromino
         private void Awake()
         {
             GameManager.Instance.AddGamePhaseListener(GamePhaseListener);
+            _effectHolder = new GameObject("Effect Holder");
         }
 
         private void Restock()
@@ -37,7 +42,10 @@ namespace Management.Tetromino
             var definition = _tetrominoQueue.Dequeue();
             TetrominoScript.Instance.transform.position = BoardManager.Instance.SpawnPosition;
             TetrominoScript.Instance.Setup(definition);
-            
+            var bombBlock = TetrominoScript.Instance.TetrominoBlocks[Random.Range(0, TetrominoScript.Instance.TetrominoBlocks.Count)];
+            var bombEffect = _effectHolder.AddComponent<BombEffect>();
+            bombEffect.Block = bombBlock;
+
             if (_tetrominoQueue.Count == 0) Restock();
             
             _nextTetrominoChangeListeners.ForEach(listener => listener.Invoke(_tetrominoQueue.Peek()));
