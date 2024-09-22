@@ -4,6 +4,7 @@ using Management;
 using Management.Board;
 using Management.Pooling;
 using Utils;
+using Random = UnityEngine.Random;
 
 namespace Tetromino
 {
@@ -42,5 +43,8 @@ namespace Tetromino
             BoardManager.Instance.PutOnBoard(TetrominoBlocks);
             TetrominoBlocks.Clear();
         }
+        
+        public BlockScript ChooseRandomBlock() => 
+            TetrominoBlocks.Count > 0 ? TetrominoBlocks[Random.Range(0, TetrominoBlocks.Count)] : null;
     }
 }

@@ -13,12 +13,12 @@ namespace Management
     {
         [SerializeField] private float baseGameSpeed = 1f;
         
-        private float _gameSpeedModifier => Mathf.Log(ScoreManager.Instance.Score + 1, 100);
-        private float _timeSinceStart;
+        private static float ScoreSpeedModifier => Mathf.Log(ScoreManager.Instance.Score + 1, 100);
+        public float AdditionalSpeedModifier { get; set; }
 
         private float _timeSinceDrop;
 
-        public float GameSpeed => baseGameSpeed + _gameSpeedModifier;
+        public float GameSpeed() => baseGameSpeed + ScoreSpeedModifier + AdditionalSpeedModifier;
         
         private GamePhase CurrentGamePhase { get; set; } = GamePhase.Blank;
         private readonly List<Action<GamePhase>> _onPhaseChange = new();
@@ -47,12 +47,11 @@ namespace Management
         {
             if (CurrentGamePhase == GamePhase.Game)
             {
-                _timeSinceStart += Time.deltaTime;
                 _timeSinceDrop += Time.deltaTime;
                 
                 if (TetrominoScript.Instance.Removed)
                     TetrominoSpawner.Instance.Spawn();
-                else if (_timeSinceDrop >= 1f / GameSpeed)
+                else if (_timeSinceDrop >= 1f / GameSpeed())
                 {
                     BoardManager.Instance.TryMove(Vector3.down);
                     _timeSinceDrop = 0f;
@@ -67,8 +66,8 @@ namespace Management
                 case GamePhase.Title:
                     break;
                 case GamePhase.Game:
-                    _timeSinceStart = 0;
                     _timeSinceDrop = 0;
+                    AdditionalSpeedModifier = 0;
                     break;
                 case GamePhase.Loss:
                     break;

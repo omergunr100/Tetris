@@ -9,7 +9,7 @@ namespace Player
     public class PlayerController : Singleton<PlayerController>
     {
         [SerializeField] private float movementSpeed = 2f;
-        private float ActualMovementSpeed => movementSpeed + GameManager.Instance.GameSpeed;
+        private float ActualMovementSpeed() => movementSpeed + GameManager.Instance.GameSpeed();
         
         private float _timeSinceLastMove;
         
@@ -20,7 +20,7 @@ namespace Player
             if (GetRotationInput())
                 BoardManager.Instance.TryRotate();
             
-            if (_timeSinceLastMove >= 1f / ActualMovementSpeed)
+            if (_timeSinceLastMove >= 1f / ActualMovementSpeed())
             {
                 _timeSinceLastMove = 0f;
                 if (!TetrominoScript.Instance.Removed) BoardManager.Instance.TryMove(GetMovementInput());

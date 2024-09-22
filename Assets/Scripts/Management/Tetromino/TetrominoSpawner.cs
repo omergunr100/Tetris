@@ -22,7 +22,6 @@ namespace Management.Tetromino
         private void Awake()
         {
             GameManager.Instance.AddGamePhaseListener(GamePhaseListener);
-            _effectHolder = new GameObject("Effect Holder");
         }
 
         private void Restock()
@@ -44,7 +43,7 @@ namespace Management.Tetromino
             TetrominoScript.Instance.transform.position = BoardManager.Instance.SpawnPosition;
             TetrominoScript.Instance.Setup(definition);
 
-            if (TitleCanvas.AdditionalContentEnabled) ApplyRandomEffect();
+            if (TitleCanvas.AdditionalContentEnabled()) ApplyRandomEffect();
             
             if (_tetrominoQueue.Count == 0) Restock();
             
@@ -56,10 +55,12 @@ namespace Management.Tetromino
             switch (phase)
             {
                 case GamePhase.Game:
+                    _effectHolder = new GameObject("Effect Holder");
                     Restock();
                     break;
                 case GamePhase.Loss:
                     _tetrominoQueue.Clear();
+                    Destroy(_effectHolder);
                     break;
             }
         }
@@ -69,11 +70,20 @@ namespace Management.Tetromino
 
         private void ApplyRandomEffect()
         {
-            if (Random.Range(0, 1) <= 0.05)
+            var rand = Random.Range(0f, 1f);
+            if (rand <= 0.05)
             {
-                var bombBlock = TetrominoScript.Instance.TetrominoBlocks[Random.Range(0, TetrominoScript.Instance.TetrominoBlocks.Count)];
+                var bombBlock = TetrominoScript.Instance.ChooseRandomBlock();
+                if (bombBlock == null) return;
                 var bombEffect = _effectHolder.AddComponent<BombEffect>();
                 bombEffect.Block = bombBlock;
+            }
+            else if (rand <= 0.25)
+            {
+                var speedUpBlock = TetrominoScript.Instance.ChooseRandomBlock();
+                if (speedUpBlock == null) return;
+                var speedUpEffect = _effectHolder.AddComponent<SpeedEffect>();
+                speedUpEffect.Block = speedUpBlock;
             }
         }
     }
