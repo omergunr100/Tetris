@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using Effects.Definition;
+﻿using Effects.Definition;
+using Management.Audio;
 using Management.Board;
 using Management.Score;
 using Tetromino;
@@ -45,6 +45,7 @@ namespace Effects.Implementation
 
         private void Explode()
         {
+            SoundManager.Instance.Explode();
             var (x, y) = Block.BoardLocation;
             for (var dX = -2; dX <= 2; dX++)
                 for (var dY = -2; dY <= 2; dY++)

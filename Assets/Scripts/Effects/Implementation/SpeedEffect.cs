@@ -1,6 +1,8 @@
-﻿namespace Effects.Implementation
+﻿using Effects.Definition;
+
+namespace Effects.Implementation
 {
-    public class SpeedEffect
+    public class SpeedEffect : BaseEffect
     {
         
     }

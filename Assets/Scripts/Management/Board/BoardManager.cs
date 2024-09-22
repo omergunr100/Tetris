@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Management.Audio;
 using Management.Pooling;
 using Management.Score;
 using Tetromino;
@@ -199,8 +200,14 @@ namespace Management.Board
                 }
             }
             
-            ClearRows(fullRows);
-            
+            if (fullRows.Count == 0)
+                SoundManager.Instance.TetrominoLand();
+            else
+            {
+                SoundManager.Instance.RowClearing();
+                ClearRows(fullRows);
+            }
+
             // add score to current score
             var currentLineBonus = 100;
             var totalAdd = 0;

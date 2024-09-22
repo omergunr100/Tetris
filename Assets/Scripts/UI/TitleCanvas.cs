@@ -30,5 +30,7 @@ namespace UI
         }
 
         public void OpenHighScores() => GameManager.Instance.SetGamePhase(GamePhase.HighScores);
+
+        public static bool AdditionalContentEnabled => PlayerPrefs.HasKey(AdditionalContentKey) && PlayerPrefs.GetInt(AdditionalContentKey) != 0;
     }
 }
