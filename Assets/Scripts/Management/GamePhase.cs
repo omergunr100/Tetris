@@ -4,7 +4,8 @@
     {
         Blank,
         Title,
-        Game,
+        Tetris,
+        Tetrisd,
         Loss,
         HighScores
     }

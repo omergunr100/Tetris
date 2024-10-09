@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Management.Board;
+using Management.Playback;
 using Management.Score;
 using Management.Tetromino;
 using Tetromino;
@@ -16,9 +17,10 @@ namespace Management
         private static float ScoreSpeedModifier => Mathf.Log(ScoreManager.Instance.Score + 1, 100);
         public float AdditionalSpeedModifier { get; set; }
 
-        private float _timeSinceDrop;
+        public float TimeSinceDrop { get; set; }
 
         public float GameSpeed() => baseGameSpeed + ScoreSpeedModifier + AdditionalSpeedModifier;
+        public bool ShouldDrop() => TimeSinceDrop >= 1f / GameSpeed();
         
         private GamePhase CurrentGamePhase { get; set; } = GamePhase.Blank;
         private readonly List<Action<GamePhase>> _onPhaseChange = new();
@@ -45,18 +47,43 @@ namespace Management
 
         private void Update()
         {
-            if (CurrentGamePhase == GamePhase.Game)
+            switch (CurrentGamePhase)
             {
-                _timeSinceDrop += Time.deltaTime;
-                
-                if (TetrominoScript.Instance.Removed)
-                    TetrominoSpawner.Instance.Spawn();
-                else if (_timeSinceDrop >= 1f / GameSpeed())
-                {
-                    BoardManager.Instance.TryMove(Vector3.down);
-                    _timeSinceDrop = 0f;
-                }
+                case GamePhase.Tetris:
+                    UpdateTetris();
+                    break;
+                case GamePhase.Tetrisd:
+                    UpdateTetrisd();
+                    break;
             }
+        }
+
+        private void UpdateTetris()
+        {
+            TimeSinceDrop += Time.deltaTime;
+                
+            if (TetrominoScript.Instance.Removed)
+                TetrominoSpawner.Instance.Spawn();
+            else if (ShouldDrop())
+                DropTetromino();
+        }
+
+        private void UpdateTetrisd()
+        {
+            if (GameRecorder.Instance.IsEmpty())
+            {
+                // todo: end the game
+            }
+                
+            TimeSinceDrop += Time.deltaTime;
+
+            if (GameRecorder.Instance.GetNext(out var action)) action.Play();
+        }
+        
+        private void DropTetromino()
+        {
+            BoardManager.Instance.TryMove(Vector3.down);
+            TimeSinceDrop = 0f;
         }
 
         private void GamePhaseListener(GamePhase phase)
@@ -65,8 +92,12 @@ namespace Management
             {
                 case GamePhase.Title:
                     break;
-                case GamePhase.Game:
-                    _timeSinceDrop = 0;
+                case GamePhase.Tetris:
+                    TimeSinceDrop = 0;
+                    AdditionalSpeedModifier = 0;
+                    break;
+                case GamePhase.Tetrisd:
+                    TimeSinceDrop = 0;
                     AdditionalSpeedModifier = 0;
                     break;
                 case GamePhase.Loss:

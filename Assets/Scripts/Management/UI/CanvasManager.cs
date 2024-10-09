@@ -20,7 +20,7 @@ namespace Management.UI
         {
             titleCanvas.SetActive(phase == GamePhase.Title);
             endOfGameCanvas.SetActive(phase == GamePhase.Loss);
-            inGameCanvas.SetActive(phase == GamePhase.Game);
+            inGameCanvas.SetActive(phase == GamePhase.Tetris);
             highScoresCanvas.SetActive(phase == GamePhase.HighScores);
         }
     }

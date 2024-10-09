@@ -54,7 +54,7 @@ namespace Management.Tetromino
         {
             switch (phase)
             {
-                case GamePhase.Game:
+                case GamePhase.Tetris:
                     _effectHolder = new GameObject("Effect Holder");
                     Restock();
                     break;

@@ -1,4 +1,5 @@
-﻿using Management;
+﻿using System;
+using Management;
 using Management.Board;
 using Tetromino;
 using UnityEngine;
@@ -12,9 +13,21 @@ namespace Player
         private float ActualMovementSpeed() => movementSpeed + GameManager.Instance.GameSpeed();
         
         private float _timeSinceLastMove;
-        
+        private bool _listening = true;
+
+        protected void Awake()
+        {
+            GameManager.Instance.AddGamePhaseListener(phase =>
+            {
+                _timeSinceLastMove = 0;
+                _listening = phase == GamePhase.Tetris;
+            });
+        }
+
         private void Update()
         {
+            if (!_listening) return;
+            
             _timeSinceLastMove += Time.deltaTime;
             
             if (GetRotationInput())

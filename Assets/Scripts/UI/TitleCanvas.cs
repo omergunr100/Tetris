@@ -19,7 +19,7 @@ namespace UI
         private void SetColor() => 
             additionalContentImage.color = PlayerPrefs.GetInt(AdditionalContentKey) == 0 ? Color.red : Color.green; 
 
-        public void StartGame() => GameManager.Instance.SetGamePhase(GamePhase.Game);
+        public void StartGame() => GameManager.Instance.SetGamePhase(GamePhase.Tetris);
 
         public void SwitchContentSetting()
         {

@@ -80,7 +80,7 @@ namespace Management.Score
 
         private void GamePhaseListener(GamePhase phase)
         {
-            if (phase == GamePhase.Game)
+            if (phase == GamePhase.Tetris)
                 SetScore(0);
         }
 

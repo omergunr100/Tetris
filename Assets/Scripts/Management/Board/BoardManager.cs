@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Management.Audio;
+using Management.Playback;
+using Management.Playback.Actions;
 using Management.Pooling;
 using Management.Score;
 using Tetromino;
@@ -82,12 +85,12 @@ namespace Management.Board
         private void GamePhaseListener(GamePhase phase)
         {
             if (_wallParent != null)
-                _wallParent.SetActive(phase == GamePhase.Game);
+                _wallParent.SetActive(phase == GamePhase.Tetris);
             if (_boardParent != null)
-                _boardParent.SetActive(phase == GamePhase.Game);
+                _boardParent.SetActive(phase == GamePhase.Tetris);
             switch (phase)
             {
-                case GamePhase.Game:
+                case GamePhase.Tetris:
                     Reset();
                     break;
                 case GamePhase.Loss:
@@ -117,8 +120,14 @@ namespace Management.Board
                 legal &= IsEmptyIndex(x, y);
             }
 
-            if (legal) Move(mover.transform, direction);
-            else if (ShouldStop()) mover.Remove();
+            if (legal)
+            {
+                Move(mover.transform, direction);
+            }
+            else if (ShouldStop())
+            {
+                mover.Remove();
+            }
             
             return legal;
         }
