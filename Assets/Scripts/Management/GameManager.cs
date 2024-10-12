@@ -17,12 +17,13 @@ namespace Management
         private static float ScoreSpeedModifier => Mathf.Log(ScoreManager.Instance.Score + 1, 100);
         public float AdditionalSpeedModifier { get; set; }
 
-        public float TimeSinceDrop { get; set; }
+        private float TimeSinceDrop { get; set; }
+        public float TimeSinceStart { get; private set; }
 
         public float GameSpeed() => baseGameSpeed + ScoreSpeedModifier + AdditionalSpeedModifier;
-        public bool ShouldDrop() => TimeSinceDrop >= 1f / GameSpeed();
+        private bool ShouldDrop() => TimeSinceDrop >= 1f / GameSpeed();
         
-        private GamePhase CurrentGamePhase { get; set; } = GamePhase.Blank;
+        public GamePhase CurrentGamePhase { get; private set; } = GamePhase.Blank;
         private readonly List<Action<GamePhase>> _onPhaseChange = new();
 
         public void AddGamePhaseListener(Action<GamePhase> action) => _onPhaseChange.Add(action);
@@ -71,19 +72,18 @@ namespace Management
         private void UpdateTetrisd()
         {
             if (GameRecorder.Instance.IsEmpty())
-            {
-                // todo: end the game
-            }
+                SetGamePhase(GamePhase.Loss);
                 
             TimeSinceDrop += Time.deltaTime;
 
-            if (GameRecorder.Instance.GetNext(out var action)) action.Play();
+            while (GameRecorder.Instance.GetNext(out var action)) action.Play();
         }
         
         private void DropTetromino()
         {
             BoardManager.Instance.TryMove(Vector3.down);
             TimeSinceDrop = 0f;
+            RecorderUtils.RecordMove(Vector3.down);
         }
 
         private void GamePhaseListener(GamePhase phase)

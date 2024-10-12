@@ -1,6 +1,7 @@
 ﻿using System;
 using Management;
 using Management.Board;
+using Management.Playback;
 using Tetromino;
 using UnityEngine;
 using Utils;
@@ -31,12 +32,21 @@ namespace Player
             _timeSinceLastMove += Time.deltaTime;
             
             if (GetRotationInput())
-                BoardManager.Instance.TryRotate();
+            {
+                BoardManager.Instance.TryRotate(); 
+                RecorderUtils.RecordRotation();
+            }
             
             if (_timeSinceLastMove >= 1f / ActualMovementSpeed())
             {
                 _timeSinceLastMove = 0f;
-                if (!TetrominoScript.Instance.Removed) BoardManager.Instance.TryMove(GetMovementInput());
+                if (!TetrominoScript.Instance.Removed)
+                {
+                    var movementInput = GetMovementInput();
+                    BoardManager.Instance.TryMove(movementInput);
+                    RecorderUtils.RecordMove(movementInput);
+                }
+                // todo: record movement
             }
         }
 

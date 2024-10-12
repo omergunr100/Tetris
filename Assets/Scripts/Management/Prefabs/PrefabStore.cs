@@ -8,5 +8,7 @@ namespace Management.Prefabs
     {
         [SerializeField] public BlockScript blockPrefab; 
         [SerializeField] public TetrominoDefinition[] tetrominoDataPrefabs;
+
+        [SerializeField] public GameObject stickFigure;
     }
 }

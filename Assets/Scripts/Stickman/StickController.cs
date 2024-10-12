@@ -8,11 +8,14 @@ namespace Stickman
     {
         [SerializeField] private Rigidbody2D stickBody;
         [SerializeField] private float speed;
+        [SerializeField] private float verticalSpeed;
         [SerializeField] private float maxSpeed;
+        [SerializeField] private Animator animator;
 
         private Vector2 _movement;
 
         public Direction Look { get; private set; } = Direction.Right;
+        public bool Grounded { get; set; } = true;
 
         public bool Moving => _movement.x != 0;
         public bool MovingRight => Look == Direction.Right && Moving;
@@ -21,6 +24,7 @@ namespace Stickman
         
         public void OnMove(InputAction.CallbackContext context)
         {
+            if (!stickBody.gameObject.activeSelf) return;
             _movement = context.ReadValue<Vector2>();
             Look = _movement.x < 0 ? Direction.Left : _movement.x > 0 ? Direction.Right : Look;
         }
@@ -38,6 +42,16 @@ namespace Stickman
 
             // calculate delta
             return Mathf.Min(targetVelocity - currVelocity, maxSpeed);
+        }
+
+        public float GetVerticalDelta()
+        {
+            // get velocity parameters
+            var currVelocity = stickBody.velocity.y;
+            var targetVelocity = _movement.y * verticalSpeed;
+            
+            // calculate delta
+            return targetVelocity - currVelocity;
         }
     }
 }

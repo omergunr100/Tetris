@@ -18,10 +18,10 @@ namespace Management.UI
 
         private void GamePhaseListener(GamePhase phase)
         {
-            titleCanvas.SetActive(phase == GamePhase.Title);
-            endOfGameCanvas.SetActive(phase == GamePhase.Loss);
-            inGameCanvas.SetActive(phase == GamePhase.Tetris);
-            highScoresCanvas.SetActive(phase == GamePhase.HighScores);
+            titleCanvas.SetActive(phase is GamePhase.Title);
+            endOfGameCanvas.SetActive(phase is GamePhase.Loss);
+            inGameCanvas.SetActive(phase is GamePhase.Tetris or GamePhase.Tetrisd);
+            highScoresCanvas.SetActive(phase is GamePhase.HighScores);
         }
     }
 }

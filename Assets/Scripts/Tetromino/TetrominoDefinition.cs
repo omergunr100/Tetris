@@ -23,6 +23,7 @@ namespace Tetromino
                 block.transform.parent = parent.transform;
                 block.transform.localPosition = directive.relativePosition;
                 block.transform.localRotation = directive.rotation;
+                block.SetTetromino();
             }
         }
     }

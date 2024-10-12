@@ -2,8 +2,9 @@
 {
     public interface IGameAction
     {
+        float GetTime();
         void Play();
-        bool ShouldPlay() => true;
+        bool ShouldPlay() => GameRecorder.Instance.TimeSinceStart >= GetTime();
 
         IGameAction Empty => new GameAction(() => {});
     }

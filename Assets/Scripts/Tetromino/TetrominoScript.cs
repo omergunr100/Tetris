@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Management;
 using Management.Board;
 using Management.Pooling;
@@ -16,19 +15,14 @@ namespace Tetromino
 
         private void Awake()
         {
-            GameManager.Instance.AddGamePhaseListener(phase =>
+            GameManager.Instance.AddGamePhaseListener(_ =>
             {
-                switch (phase)
+                TetrominoBlocks.ForEach(block =>
                 {
-                    case GamePhase.Loss:
-                        TetrominoBlocks.ForEach(block =>
-                        {
-                            if (block.gameObject.activeSelf)
-                                PoolStore.Instance.Release(block);
-                        });
-                        TetrominoBlocks.Clear();
-                        break;
-                }
+                    if (block.gameObject.activeSelf)
+                        PoolStore.Instance.Release(block);
+                });
+                TetrominoBlocks.Clear();
             });
         }
 
@@ -44,7 +38,7 @@ namespace Tetromino
             TetrominoBlocks.Clear();
         }
         
-        public BlockScript ChooseRandomBlock() => 
-            TetrominoBlocks.Count > 0 ? TetrominoBlocks[Random.Range(0, TetrominoBlocks.Count)] : null;
+        public int ChooseRandomBlockIndex() => 
+            TetrominoBlocks.Count > 0 ? Random.Range(0, TetrominoBlocks.Count) : -1;
     }
 }

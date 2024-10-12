@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Management.Audio;
-using Management.Playback;
-using Management.Playback.Actions;
 using Management.Pooling;
 using Management.Score;
 using Tetromino;
@@ -27,7 +24,8 @@ namespace Management.Board
 
         private long _runningCount = 0;
         
-        public Vector3 SpawnPosition => new(width / 2f, height, 0);
+        public Vector3 TetrominoSpawnPosition => new(width / 2f, height, 0);
+        public Vector3 StickSpawnPosition => new(width / 2f, Bottom, 0);
 
         private void CreateBoard()
         {
@@ -58,6 +56,12 @@ namespace Management.Board
                         var spriteRenderer = wall.GetComponentInParent<SpriteRenderer>();
                         spriteRenderer.color = Color.gray;
                         wall.transform.SetParent(_wallParent.transform);
+                        wall.SetWall();
+                        if (y == Bottom)
+                        {
+                            var collider = wall.GetComponent<BoxCollider2D>();
+                            collider.size += Vector2.right * 0.2f;
+                        }
                     }
                 }
             }
@@ -84,19 +88,17 @@ namespace Management.Board
 
         private void GamePhaseListener(GamePhase phase)
         {
+            var isGame = phase is GamePhase.Tetris or GamePhase.Tetrisd;
+            var shouldClear = phase is GamePhase.Tetrisd or GamePhase.Loss;
             if (_wallParent != null)
-                _wallParent.SetActive(phase == GamePhase.Tetris);
+                _wallParent.SetActive(isGame);
             if (_boardParent != null)
-                _boardParent.SetActive(phase == GamePhase.Tetris);
-            switch (phase)
-            {
-                case GamePhase.Tetris:
-                    Reset();
-                    break;
-                case GamePhase.Loss:
-                    Clear();
-                    break;
-            }
+                _boardParent.SetActive(isGame);
+
+            if (shouldClear)
+                Clear();
+            if (isGame)
+                Reset();
         }
 
         private (int, int) PositionToBoard(Vector3 p) => (Mathf.FloorToInt(p.x), Mathf.FloorToInt(p.y));
@@ -173,6 +175,7 @@ namespace Management.Board
 
         public void PutOnBoard(List<BlockScript> blocks)
         {
+            Debug.Log("Putting on board");
             var scoreBonus = 0;
             var fullRows = new HashSet<int>();
             
@@ -186,7 +189,7 @@ namespace Management.Board
                 {
                     for (var j = i; j < blocks.Count; j++)
                         PoolStore.Instance.Release(blocks[j]);
-                    GameManager.Instance.SetGamePhase(GamePhase.Loss);
+                    GameManager.Instance.SetGamePhase(GameManager.Instance.CurrentGamePhase == GamePhase.Tetris ? GamePhase.Tetrisd : GamePhase.Loss);
                     return;
                 }
                 
@@ -198,6 +201,7 @@ namespace Management.Board
                     _board[x, y].IsOnBoard = true;
                     _board[x, y].BoardLocation = (x, y);
                     _board[x, y].Id = _runningCount;
+                    _board[x, y].SetWall();
                 }
                 
                 // check if line is now full

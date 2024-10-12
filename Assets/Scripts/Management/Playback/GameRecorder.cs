@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Management.Playback.Actions;
+using UnityEngine;
 using Utils;
 
 namespace Management.Playback
@@ -8,15 +8,21 @@ namespace Management.Playback
     public class GameRecorder : Singleton<GameRecorder>
     {
         private readonly Queue<IGameAction> _gameActions = new();
-        private bool _recording;
 
+        public float TimeSinceStart { get; private set; }
+        
         private void Awake()
         {
             GameManager.Instance.AddGamePhaseListener(phase =>
             {
-                _recording = phase == GamePhase.Tetris;
-                if (phase == GamePhase.Tetris) _gameActions.Clear();
+                TimeSinceStart = 0;
+                if (phase == GamePhase.Title) _gameActions.Clear();
             });
+        }
+
+        private void Update()
+        {
+            TimeSinceStart += Time.deltaTime;
         }
 
         public bool IsEmpty() => _gameActions.Count == 0;
@@ -30,7 +36,7 @@ namespace Management.Playback
         }
 
         public void RecordAction(IGameAction action) {
-            if (_recording) _gameActions.Enqueue(action);
+            if (GameManager.Instance.CurrentGamePhase is GamePhase.Tetris) _gameActions.Enqueue(action);
         }
     }
 }

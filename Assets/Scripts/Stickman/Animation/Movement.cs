@@ -10,7 +10,8 @@ namespace Stickman.Animation
         [SerializeField] private GameObject rightLeg;
         [SerializeField] private Animator animator;
         [SerializeField] private float waitTime = 0.5f;
-        
+
+        private Rigidbody2D _headRb;
         private Rigidbody2D _leftLegRb;
         private Rigidbody2D _rightLegRb;
 
@@ -19,13 +20,14 @@ namespace Stickman.Animation
 
         private void Start()
         {
+            _headRb = head.GetComponent<Rigidbody2D>();
             _leftLegRb = leftLeg.GetComponent<Rigidbody2D>();
             _rightLegRb = rightLeg.GetComponent<Rigidbody2D>();
             _headSprite = head.GetComponent<SpriteRenderer>();
             _lookingAt = StickController.Direction.Right;
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
             if (StickController.Instance.Look != _lookingAt)
             {
@@ -34,20 +36,23 @@ namespace Stickman.Animation
             }
             if (StickController.Instance.MovingRight)
             {
-                Debug.Log("Moving Right");
                 animator.Play("Walk Right");
                 StartCoroutine(MoveRight(waitTime));
             }
             else if (StickController.Instance.MovingLeft)
             {
-                Debug.Log("Moving Left");
                 animator.Play("Walk Left");
                 StartCoroutine(MoveLeft(waitTime));
             }
             else if (!StickController.Instance.Moving)
             {
-                Debug.Log("Idle");
                 animator.Play("Idle");
+            }
+
+            if (StickController.Instance.Jump && StickController.Instance.Grounded)
+            {
+                Debug.Log("Jumping");
+                StartCoroutine(Jump());
             }
         }
 
@@ -65,6 +70,16 @@ namespace Stickman.Animation
             _rightLegRb.AddForce(Vector2.right * deltaV);
             yield return new WaitForSeconds(seconds);
             _leftLegRb.AddForce(Vector2.right * deltaV);
+        }
+
+        private IEnumerator Jump()
+        {
+            var deltaV = Vector2.up * StickController.Instance.GetVerticalDelta();
+            _headRb.velocity = deltaV;
+            _leftLegRb.AddForce(deltaV);
+            _rightLegRb.AddForce(deltaV);
+            StickController.Instance.Grounded = false;
+            yield return null;
         }
 
         private void ChangeLookDirection()

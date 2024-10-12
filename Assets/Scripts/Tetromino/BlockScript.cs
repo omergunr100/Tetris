@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Tetromino
 {
@@ -10,5 +11,8 @@ namespace Tetromino
 
         public void SetColor(Color color) => GetComponent<SpriteRenderer>().color = color;
         public Color GetColor() => GetComponent<SpriteRenderer>().color;
+
+        public void SetWall() => gameObject.layer = LayerMask.NameToLayer("Wall");
+        public void SetTetromino() => gameObject.layer = LayerMask.NameToLayer("Tetromino");
     }
 }
